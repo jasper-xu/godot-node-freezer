@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Rounded background for better visibility -->
+  <rect x="8" y="8" width="240" height="240" rx="48" fill="#1E1E2E"/>
+
+  <!-- Six main branches forming the snowflake skeleton -->
+  <g stroke="#00E5FF" stroke-width="12" stroke-linecap="round" fill="none">
+    <line x1="128" y1="128" x2="128" y2="48"/>
+    <line x1="128" y1="128" x2="128" y2="208"/>
+    <line x1="128" y1="128" x2="58" y2="58"/>
+    <line x1="128" y1="128" x2="198" y2="198"/>
+    <line x1="128" y1="128" x2="198" y2="58"/>
+    <line x1="128" y1="128" x2="58" y2="198"/>
+  </g>
+
+  <!-- Endpoint node dots -->
+  <g fill="#00E5FF">
+    <circle cx="128" cy="48" r="16"/>
+    <circle cx="128" cy="208" r="16"/>
+    <circle cx="58" cy="58" r="16"/>
+    <circle cx="198" cy="198" r="16"/>
+    <circle cx="198" cy="58" r="16"/>
+    <circle cx="58" cy="198" r="16"/>
+  </g>
+
+  <!-- Central main node -->
+  <circle cx="128" cy="128" r="28" fill="#FFFFFF" stroke="#00E5FF" stroke-width="12"/>
+  <circle cx="128" cy="128" r="10" fill="#00E5FF"/>
+</svg>
