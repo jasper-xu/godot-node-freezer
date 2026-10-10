@@ -2,7 +2,7 @@
 
 **Freeze / unfreeze any node with one click — stops scripts, rendering, physics, collisions, and audio\.**
 
-Node Freezer is a Godot editor plugin that lets you instantly “freeze” or “unfreeze” any node in your scene, just like toggling visibility\. When frozen, the node and all its descendants completely stop working at runtime — scripts no longer execute, visuals are hidden, collisions are disabled, and audio pauses — while the node structure remains intact in the scene tree and can be unfrozen at any time\.
+Node Freezer is a Godot editor plugin that lets you instantly “freeze” or “unfreeze” any node in your scene, just like toggling visibility\. When frozen, the selected node itself completely stops working at runtime — scripts no longer execute, visuals are hidden, collisions are disabled, and audio pauses — while the node structure remains intact in the scene tree and can be unfrozen at any time\.
 
 ---
 
@@ -14,13 +14,13 @@ Node Freezer is a Godot editor plugin that lets you instantly “freeze” or �
 
     - Frozen: bright cyan snowflake ❄️
 
-- **Recursive by default** — freezing a parent freezes all its children\.
+- **Independent per\-node state** — freezing or unfreezing a node does **not** recurse into its children\. Each node’s frozen state is fully independent from its parent and siblings\.
 
-- **Completely stops runtime logic:**
+- **Completely stops runtime logic for the selected node**:
 
     - Scripts: `process_mode` set to `DISABLED`, halting `_process`, `_physics_process`, `_input`, etc\.
 
-    - Rendering: all `CanvasItem` children are hidden\.
+    - Rendering: the node’s `visible` is set to `false`\.
 
     - Physics \& collisions: `CollisionObject2D` gets `disable_mode = REMOVE`, fully removed from the physics simulation\.
 
@@ -42,23 +42,56 @@ Node Freezer is a Godot editor plugin that lets you instantly “freeze” or �
 
 3. Go to **Project → Project Settings → Plugins**, find **Node Freezer**, and enable it\.
 
-4. A new icon button will appear in the top toolbar\.
+4. A new icon button will appear in the top toolbar \(see below\)\.
+
+---
+
+## 🔍 Button Location
+
+The plugin button is added to `CONTAINER_TOOLBAR`, which is the **main toolbar at the top of the Godot editor**\. It is typically located to the **right of the play/run buttons** and to the **left of the scene switcher dropdown**\.
+
+Here is a reference layout of the Godot 4 editor:
+
+```Plain Text
+[Menu Bar: Scene  Project  Debug  Editor  Help]
+[Main Toolbar: ◀ ▶ Scene Selector | 2D 3D Script Game | ▶️ ⏸️ ⏹️ | ... | 🎬 Run Current Scene | 🎯 Node Freezer Button | ...]
+```
+
+The button is a **square icon button**\. Its icon changes to indicate the current state of the selected node:
+
+- **Warm orange sun** ☀️ → the node is **not frozen** \(click to freeze\)\.
+
+![Unfreeze](screenshot/Unfreeze.jpeg)
+
+- **Bright cyan snowflake** ❄️ → the node is **frozen** \(click to unfreeze\)\.
+
+![Freeze](screenshot/Freeze.jpeg)
+
+If you cannot see the button:
+
+- Make sure the plugin is enabled in **Project → Project Settings → Plugins**\.
+
+- Try restarting the Godot editor\.
+
+- The toolbar may be crowded; look for a small icon button with a sun or snowflake symbol\.
 
 ---
 
 ## 🎮 Usage
 
-1. Select one or more nodes in the Scene tree \(hold `Ctrl` for multi\-select\)\.
+1. **Select one or more nodes** in the Scene tree \(hold `Ctrl` for multi\-select\)\.
 
 2. Click the **Node Freezer** button in the top toolbar:
 
-    - **Orange sun** icon → currently unfrozen; click to freeze\.
+    - If the button shows an **orange sun**, clicking it will **freeze** the selected nodes\.
 
-    - **Cyan snowflake** icon → currently frozen; click to unfreeze\.
+    - If the button shows a **cyan snowflake**, clicking it will **unfreeze** the selected nodes\.
 
 3. Frozen nodes stop completely at runtime; unfreezing restores their original state\.
 
-4. Press `Ctrl + Z` to undo the last action\.
+4. Press `Ctrl + Z` to undo the last freeze/unfreeze action\.
+
+**Note**: Freezing or unfreezing only affects the selected nodes themselves\. It does **not** propagate to their children\. You can freeze a child independently, then freeze its parent, and the child will keep its own frozen state when the parent is unfrozen\.
 
 ---
 
@@ -80,11 +113,15 @@ Node Freezer is a Godot editor plugin that lets you instantly “freeze” or �
 
 - If the node itself uses a `@tool` script, its editor `_process` will also stop when frozen — this is expected behavior\.
 
+- **Children and inheritance**: When you freeze a parent node, its children may temporarily stop working at runtime due to Godot’s built\-in `process_mode` inheritance and `visible` propagation\. However, the plugin does **not** modify the children’s own frozen state or original properties\. Unfreezing the parent restores the children to their previous state, and any child that was independently frozen remains frozen\.
+
 ---
 
 ## 🔗 Links
 
-- Source code / Issue tracker: \[[GitHub repository URL](https://github.com/jasper-xu/godot-node-freezer)\]
+- Source code / Issue tracker: [https://github\.com/jasper\-xu/godot\-node\-freezer](https://github.com/jasper-xu/godot-node-freezer)
 
 - License: [MIT](https://opensource.org/licenses/MIT)
+
+
 

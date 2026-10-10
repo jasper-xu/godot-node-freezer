@@ -10,7 +10,6 @@ const META_ORIG_PROCESS := "_node_freezer_orig_process_mode"
 const META_ORIG_VISIBLE := "_node_freezer_orig_visible"
 const META_ORIG_DISABLE := "_node_freezer_orig_disable_mode"
 const META_ORIG_PAUSED := "_node_freezer_orig_stream_paused"
-const META_PROCESSING := "_node_freezer_processing"
 
 var _button: Button = null
 var _undo_redo: EditorUndoRedoManager
@@ -27,7 +26,7 @@ func _enter_tree() -> void:
 	_button.icon = ICON_UNFREEZE
 	_button.add_theme_constant_override("icon_max_width", 24)
 	_button.custom_minimum_size = Vector2(28, 28)
-	_button.tooltip_text = "Freeze/unfreeze selected nodes\n(stops scripts, rendering, physics, collision, and audio)"
+	_button.tooltip_text = "Freeze/unfreeze selected nodes\n(Applies only to the selected nodes, does not recurse into children)"
 	_button.pressed.connect(_on_button_pressed)
 	add_control_to_container(CONTAINER_TOOLBAR, _button)
 
@@ -101,32 +100,21 @@ func _on_button_pressed() -> void:
 
 	_undo_redo.create_action("Freeze Nodes" if do_freeze else "Unfreeze Nodes")
 	for n in nodes:
-		_register_recursive(n, do_freeze)
+		if do_freeze:
+			# Only freeze nodes that are not already frozen, to avoid overwriting original values
+			if not _is_frozen(n):
+				_register_freeze(n)
+		else:
+			# Only unfreeze nodes that are currently frozen
+			if _is_frozen(n):
+				_register_unfreeze(n)
 	_undo_redo.commit_action()
 
 	_refresh_button_state()
 
 
-func _register_recursive(node: Node, freeze: bool) -> void:
-	if node.has_meta(META_PROCESSING):
-		return
-	node.set_meta(META_PROCESSING, true)
-
-	var already_frozen := _is_frozen(node)
-
-	if freeze and not already_frozen:
-		_register_freeze(node)
-	elif not freeze and already_frozen:
-		_register_unfreeze(node)
-
-	for child in node.get_children():
-		_register_recursive(child, freeze)
-
-	node.remove_meta(META_PROCESSING)
-
-
 # ----------------------------------------------------------------
-# Register freeze operation (supports undo/redo)
+# Register freeze operation (supports undo/redo) — applies only to the single node
 # ----------------------------------------------------------------
 
 func _register_freeze(node: Node) -> void:
@@ -162,7 +150,7 @@ func _register_freeze(node: Node) -> void:
 		_undo_redo.add_do_method(node, "set_meta", META_ORIG_PAUSED, orig_paused)
 		_undo_redo.add_do_property(node, "stream_paused", true)
 
-	# --- UNDO: undo freeze ---
+	# --- UNDO: undo freeze = restore original state ---
 	_undo_redo.add_undo_property(node, "process_mode", orig_process)
 	_undo_redo.add_undo_method(node, "remove_meta", META_FROZEN)
 	_undo_redo.add_undo_method(node, "remove_meta", META_ORIG_PROCESS)
@@ -179,7 +167,7 @@ func _register_freeze(node: Node) -> void:
 
 
 # ----------------------------------------------------------------
-# Register unfreeze operation (supports undo/redo)
+# Register unfreeze operation (supports undo/redo) — applies only to the single node
 # ----------------------------------------------------------------
 
 func _register_unfreeze(node: Node) -> void:
@@ -226,7 +214,7 @@ func _register_unfreeze(node: Node) -> void:
 		_undo_redo.add_do_property(node, "stream_paused", orig_paused)
 		_undo_redo.add_do_method(node, "remove_meta", META_ORIG_PAUSED)
 
-	# --- UNDO: undo unfreeze ---
+	# --- UNDO: undo unfreeze = freeze again ---
 	_undo_redo.add_undo_property(node, "process_mode", frozen_process)
 	_undo_redo.add_undo_method(node, "set_meta", META_FROZEN, true)
 	_undo_redo.add_undo_method(node, "set_meta", META_ORIG_PROCESS, orig_process)

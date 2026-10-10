@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://bh616lfmapc60"]
+
+[ext_resource type="Texture2D" uid="uid://br8tfi4y8xfie" path="res://resources/ball.svg" id="1_37kl0"]
+[ext_resource type="Texture2D" uid="uid://c7mfcjml2ka0b" path="res://resources/rectangle.svg" id="2_8uh7m"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_37kl0"]
+radius = 30.0
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_fnkrl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fnkrl"]
+size = Vector2(100, 60)
+
+[node name="Node2D" type="Node2D" unique_id=1705192304]
+
+[node name="ball" type="RigidBody2D" parent="." unique_id=62988535]
+position = Vector2(562, 79)
+
+[node name="Sprite2D" type="Sprite2D" parent="ball" unique_id=785054487]
+texture = ExtResource("1_37kl0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ball" unique_id=1629276619]
+shape = SubResource("CircleShape2D_37kl0")
+
+[node name="obstacle1" type="StaticBody2D" parent="." unique_id=1879655211]
+process_mode = 4
+visible = false
+position = Vector2(561, 204)
+physics_material_override = SubResource("PhysicsMaterial_fnkrl")
+metadata/_node_freezer_frozen = true
+metadata/_node_freezer_orig_process_mode = 0
+metadata/_node_freezer_orig_visible = true
+metadata/_node_freezer_orig_disable_mode = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="obstacle1" unique_id=1543862729]
+texture = ExtResource("2_8uh7m")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="obstacle1" unique_id=26141997]
+shape = SubResource("RectangleShape2D_fnkrl")
+
+[node name="obstacle2" type="StaticBody2D" parent="." unique_id=1748173894]
+position = Vector2(560, 305)
+physics_material_override = SubResource("PhysicsMaterial_fnkrl")
+
+[node name="Sprite2D" type="Sprite2D" parent="obstacle2" unique_id=1833002767]
+texture = ExtResource("2_8uh7m")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="obstacle2" unique_id=321125361]
+shape = SubResource("RectangleShape2D_fnkrl")
+
+[node name="obstacle3" type="StaticBody2D" parent="." unique_id=1008112516]
+position = Vector2(560, 423)
+physics_material_override = SubResource("PhysicsMaterial_fnkrl")
+
+[node name="Sprite2D" type="Sprite2D" parent="obstacle3" unique_id=1990068679]
+texture = ExtResource("2_8uh7m")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="obstacle3" unique_id=825191772]
+shape = SubResource("RectangleShape2D_fnkrl")
